@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 
 type IconName = 'arrow' | 'spark' | 'download' | 'external' | 'github' | 'mail' | 'copy' | 'menu' | 'close';
 
+/**
+ * Render a decorative SVG icon hidden from assistive technology.
+ * @param props - Icon name and optional size in pixels, defaulting to 18.
+ * @returns The SVG element for the requested icon.
+ */
 function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true as const };
   const paths: Record<IconName, React.ReactNode> = {
@@ -32,6 +37,10 @@ const process = [
   ['04', 'Refine', 'Measure, listen, and make each iteration feel more intentional than the last.'],
 ];
 
+/**
+ * Render the portfolio with section tracking, motion effects, and contact controls.
+ * @returns The portfolio page, including navigation and responsive sections.
+ */
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -77,6 +86,11 @@ function App() {
     };
   }, []);
 
+  /**
+   * Copy the contact email and show confirmation for 1.8 seconds on success.
+   * Open a mailto link if clipboard access fails.
+   * @returns A promise that resolves after the copy attempt or mailto fallback.
+   */
   async function copyEmail() {
     try {
       await navigator.clipboard.writeText(email);
