@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 
 type IconName = 'arrow' | 'spark' | 'download' | 'external' | 'github' | 'mail' | 'copy' | 'menu' | 'close';
 
@@ -18,25 +18,95 @@ function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
+const profile = {
+  name: 'Raushan Kumar',
+  title: 'Full-Stack Developer | MERN Stack & AI Enthusiast',
+  email: 'raushankumarlnct007@gmail.com',
+  location: 'Bhopal, Madhya Pradesh, India',
+  availability: 'Open to entry-level software development opportunities',
+  github: 'https://github.com/RAUSHANARYA',
+  linkedin: 'https://www.linkedin.com/in/raushan-kumar-1ab75a327/',
+  leetcode: 'https://leetcode.com/u/Raushan_kumar074/',
+};
+
+const contactEndpoint = '/api/contact';
+
 const projects = [
-  { number: '01', name: 'Form & Objects', category: 'COMMERCE EXPERIENCE', description: 'A considered storefront concept for objects made to last. Replace this preview copy with a real project story.', image: '/images/project-commerce.svg', imageAlt: 'Original concept preview of a warm editorial commerce storefront', tags: ['React', 'Node.js', 'Commerce'], tone: 'rose' },
-  { number: '02', name: 'Northstar', category: 'PRODUCT DASHBOARD', description: 'A clear, data-rich workspace concept that makes the important signals easy to find.', image: '/images/project-dashboard.svg', imageAlt: 'Original concept preview of a dark analytics dashboard', tags: ['TypeScript', 'Express', 'Charts'], tone: 'blue' },
-  { number: '03', name: 'Daylight', category: 'MOBILE-FIRST PRODUCT', description: 'A location-inspired mobile experience concept designed around calm, quick decisions.', image: '/images/project-mobile.svg', imageAlt: 'Original concept preview of a mobile discovery application', tags: ['React', 'API design', 'Responsive'], tone: 'amber' },
+  {
+    number: '01', name: 'Craving', category: 'FULL-STACK FOOD DELIVERY',
+    description: 'A food delivery platform connecting users, restaurants, and delivery partners. Includes multi-role workflows, authentication, cart management, and REST APIs backed by MongoDB.',
+    image: '/images/project-craving.svg', imageAlt: 'Original food delivery application illustration with a meal bowl and order status card',
+    tags: ['MongoDB', 'Express.js', 'React.js', 'Node.js'], tone: 'rose',
+    repository: 'https://github.com/RAUSHANARYA/CRAVING_PROJECT',
+  },
+  {
+    number: '02', name: 'PDF AI Chatbot', category: 'RAG & LLM APPLICATION',
+    description: 'An AI document assistant for asking questions about PDF content, retrieving relevant passages through semantic search, and generating context-aware answers.',
+    image: '/images/project-pdf-ai.svg', imageAlt: 'Original PDF AI assistant interface illustration with document library, grounded answer, and semantic retrieval visualization',
+    tags: ['React.js', 'Node.js', 'Qdrant', 'Claude AI', 'RAG'], tone: 'blue',
+    repository: 'https://github.com/RAUSHANARYA/PDF-AI-Chatbot---RAG-LLM-',
+  },
+  {
+    number: '03', name: 'Responsive E-Commerce Platform', category: 'REACT APPLICATION',
+    description: 'A responsive e-commerce frontend that fetches product catalogs from external APIs, with reusable React components, hooks, and product filtering.',
+    image: '/images/project-ecommerce.svg', imageAlt: 'Original responsive e-commerce storefront illustration with product cards and mobile shopping view',
+    tags: ['React.js', 'JavaScript', 'Fetch API', 'CSS3'], tone: 'amber',
+    repository: 'https://github.com/RAUSHANARYA/Ecommerce_react',
+  },
 ];
 
-const skills = ['React', 'TypeScript', 'JavaScript', 'Node.js', 'Express', 'MongoDB', 'REST APIs', 'CSS / Motion'];
-const process = [
-  ['01', 'Understand', 'Get close to the problem, the people, and what success actually means.'],
-  ['02', 'Shape', 'Turn rough ideas into a clear model, thoughtful UI, and buildable plan.'],
-  ['03', 'Build', 'Ship the detail: accessible interfaces, dependable APIs, and polished states.'],
-  ['04', 'Refine', 'Measure, listen, and make each iteration feel more intentional than the last.'],
+type Skill = { name: string; icon?: string; mark?: string };
+
+const devIcon = (name: string, file = `${name}-original.svg`) => `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${name}/${file}`;
+
+const skillGroups: { label: string; skills: Skill[] }[] = [
+  { label: 'LANGUAGES', skills: [
+    { name: 'Java', icon: devIcon('java') },
+    { name: 'JavaScript', icon: devIcon('javascript') },
+  ] },
+  { label: 'WEB DEVELOPMENT', skills: [
+    { name: 'React.js', icon: devIcon('react') },
+    { name: 'Node.js', icon: devIcon('nodejs') },
+    { name: 'Express.js', icon: devIcon('express') },
+    { name: 'REST APIs', mark: 'API' },
+    { name: 'HTML5', icon: devIcon('html5') },
+    { name: 'CSS3', icon: devIcon('css3') },
+  ] },
+  { label: 'DATABASES & TOOLS', skills: [
+    { name: 'MongoDB', icon: devIcon('mongodb') },
+    { name: 'MySQL', icon: devIcon('mysql') },
+    { name: 'Git', icon: devIcon('git') },
+    { name: 'GitHub', icon: devIcon('github') },
+  ] },
+  { label: 'CORE CS & AI', skills: [
+    { name: 'Data Structures & Algorithms', mark: 'DS' },
+    { name: 'OOP', mark: 'OOP' },
+    { name: 'DBMS', mark: 'DB' },
+    { name: 'RAG', mark: 'RAG' },
+    { name: 'LLMs', mark: 'AI' },
+  ] },
+];
+
+const achievements = [
+  { value: '350+', label: 'LeetCode problems solved' },
+  { value: '250+', label: 'GeeksforGeeks problems solved' },
+  { value: '2-Star', label: 'CodeChef rating' },
+  { value: '200+', label: 'LeetCode streak' },
+  { value: 'Top 50', label: 'SQL problems completed' },
 ];
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const email = 'hello@yourdomain.dev';
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'success' | 'fallback' | 'error'>('idle');
+  const [contactError, setContactError] = useState('');
 
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -79,11 +149,11 @@ function App() {
 
   async function copyEmail() {
     try {
-      await navigator.clipboard.writeText(email);
+      await navigator.clipboard.writeText(profile.email);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      window.location.href = `mailto:${email}`;
+      window.location.href = `mailto:${profile.email}`;
     }
   }
 
@@ -98,44 +168,92 @@ function App() {
     event.currentTarget.style.setProperty('--mag-x', '0px');
     event.currentTarget.style.setProperty('--mag-y', '0px');
   };
+  const updateContactField = (field: keyof typeof contactForm, value: string) => {
+    setContactForm((current) => ({ ...current, [field]: value }));
+  };
+  const openWebmailComposer = () => {
+    const body = [
+      `Hello Raushan,`,
+      '',
+      contactForm.message,
+      '',
+      `Name: ${contactForm.name}`,
+      `Reply email: ${contactForm.email}`,
+    ].join('\n');
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(profile.email)}&su=${encodeURIComponent(contactForm.subject)}&body=${encodeURIComponent(body)}`;
+    window.location.assign(gmailComposeUrl);
+  };
+  const submitContactForm = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContactStatus('sending');
+    setContactError('');
+    try {
+      const response = await fetch(contactEndpoint, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contactForm.name,
+          email: contactForm.email,
+          subject: contactForm.subject,
+          message: contactForm.message,
+        }),
+      });
+      const result = await response.json() as { success?: boolean; message?: string };
+      if (!response.ok || !result.success) {
+        if (response.status === 503) {
+          openWebmailComposer();
+          setContactStatus('fallback');
+          return;
+        }
+        throw new Error(result.message || 'Unable to send the message right now.');
+      }
+      setContactStatus('success');
+      setContactForm({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to send the message right now.';
+      console.error('Unable to send contact message.', error);
+      openWebmailComposer();
+      setContactError(message);
+      setContactStatus('fallback');
+    }
+  };
 
   return (
     <>
       <div className="scroll-progress" aria-hidden="true" />
       <header className="site-header">
-        <a className="brand" href="#home" aria-label="Your Name, home"><span className="brand-mark">Y<span>.</span></span><span className="brand-name">YOUR NAME<small>FULL-STACK DEVELOPER</small></span></a>
+        <a className="brand" href="#home" aria-label={`${profile.name}, home`}><span className="brand-mark">RK</span><span className="brand-name">RAUSHAN KUMAR<small>FULL-STACK DEVELOPER</small></span></a>
         <button className="menu-toggle" type="button" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><Icon name={menuOpen ? 'close' : 'menu'} /></button>
         <nav className={menuOpen ? 'main-nav is-open' : 'main-nav'} aria-label="Main navigation">
-          {[['home', 'Home'], ['work', 'Work'], ['about', 'About'], ['contact', 'Contact']].map(([id, label]) => <a key={id} className={activeSection === id ? 'nav-link active' : 'nav-link'} href={`#${id}`} onClick={closeMenu}>{label}</a>)}
-          <a className="nav-cta" href={`mailto:${email}`} onClick={closeMenu}>Let’s talk <Icon name="arrow" size={15} /></a>
+          {[['home', 'Home'], ['work', 'Work'], ['about', 'About'], ['achievements', 'Achievements'], ['education', 'Education'], ['contact', 'Contact']].map(([id, label]) => <a key={id} className={activeSection === id ? 'nav-link active' : 'nav-link'} href={`#${id}`} onClick={closeMenu}>{label}</a>)}
         </nav>
       </header>
 
       <main>
         <section className="hero section-shell" id="home">
           <div className="hero-copy">
-            <p className="eyebrow reveal"><span className="status-dot" /> AVAILABLE FOR OPPORTUNITIES <span className="eyebrow-line" /></p>
+            <p className="eyebrow reveal"><span className="status-dot" /> OPEN TO ENTRY-LEVEL ROLES <span className="eyebrow-line" /></p>
             <p className="hero-hello reveal delay-1">Hey, I’m</p>
-            <h1 className="hero-title reveal delay-2">YOUR<br /><span>NAME<span className="title-period">.</span></span></h1>
-            <div className="hero-role reveal delay-3"><span className="role-line" /> FULL-STACK DEVELOPER <span className="role-plus">&</span> DIGITAL CRAFTSPERSON</div>
-            <p className="hero-description reveal delay-4">I build thoughtful digital products from first sketch to final deploy—blending solid engineering with a sharp eye for the details people feel.</p>
-            <div className="hero-actions reveal delay-4"><a className="button button-primary magnetic" href="#work" onPointerMove={moveMagneticButton} onPointerLeave={resetMagneticButton}>Explore my work <Icon name="arrow" /></a><a className="text-link" href={`mailto:${email}?subject=Please%20send%20your%20resume`}>Résumé on request <Icon name="download" size={16} /></a></div>
-            <div className="hero-socials reveal delay-4"><span>FIND ME ON</span><a href="https://github.com/" target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github" size={16} /></a><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><span className="linkedin-icon">in</span></a><span className="social-separator" /><span className="hero-location">BASED ON EARTH · WORKING EVERYWHERE</span></div>
+            <h1 className="hero-title reveal delay-2">RAUSHAN<br /><span>KUMAR<span className="title-period">.</span></span></h1>
+            <div className="hero-role reveal delay-3"><span className="role-line" /> FULL-STACK DEVELOPER <span className="role-plus">·</span> MERN STACK &amp; AI ENTHUSIAST</div>
+            <p className="hero-description reveal delay-4">Computer Science Engineering student at LNCT, building practical full-stack applications and exploring AI-powered tools with RAG and LLMs.</p>
+            <div className="hero-actions reveal delay-4"><a className="button button-primary magnetic" href="#work" onPointerMove={moveMagneticButton} onPointerLeave={resetMagneticButton}>Explore my work <Icon name="arrow" /></a><a className="text-link" href="/resume.pdf" download>Download résumé <Icon name="download" size={16} /></a></div>
+            <div className="hero-socials reveal delay-4"><span>FIND ME ON</span><a href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Icon name="github" size={16} /></a><a href={profile.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><span className="linkedin-icon">in</span></a><a className="leetcode-link" href={profile.leetcode} target="_blank" rel="noreferrer" aria-label="LeetCode">LC</a><span className="social-separator" /><span className="hero-location">BHOPAL, INDIA</span></div>
           </div>
           <div className="hero-visual reveal delay-2">
-            <div className="visual-index">FIG. 01 <span>CREATIVE ENGINEERING</span></div>
+            <div className="visual-index">FIG. 01 <span>MERN STACK × AI</span></div>
             <div className="hero-orb-wrap"><img className="hero-art" src="/images/hero-art.svg" alt="Original abstract orbital artwork in red, pink, and violet" /><span className="orbital-system" aria-hidden="true"><i className="orbit-ring ring-a" /><i className="orbit-ring ring-b" /><i className="orbit-ring ring-c" /><i className="orbit-satellite satellite-a" /><i className="orbit-satellite satellite-b" /><i className="orbit-core" /></span><span className="orbit-label orbit-label-top">DESIGN × CODE</span><span className="orbit-label orbit-label-bottom">MADE WITH INTENTION</span><span className="orbit-cross">✳</span></div>
-            <div className="vertical-note">BUILDING THE WEB, ONE DETAIL AT A TIME</div>
-            <div className="visual-coordinates">40° 43' 55.3" N<br />73° 59' 11.2" W</div>
+            <div className="vertical-note">BUILD · LEARN · IMPROVE · REPEAT</div>
+            <div className="visual-coordinates">LNCT / CSE<br />BHOPAL, INDIA</div>
           </div>
           <a className="scroll-cue" href="#work"><span className="scroll-wheel" /> SCROLL TO EXPLORE</a>
           <span className="hero-index">PORTFOLIO / 2026</span>
         </section>
 
-        <div className="marquee" aria-label="Full-stack development, creative engineering, thoughtful interfaces"><div className="marquee-track"><span>FULL-STACK DEVELOPMENT</span><i>✳</i><span>CREATIVE ENGINEERING</span><i>✳</i><span>THOUGHTFUL INTERFACES</span><i>✳</i><span>FULL-STACK DEVELOPMENT</span><i>✳</i><span>CREATIVE ENGINEERING</span><i>✳</i><span>THOUGHTFUL INTERFACES</span><i>✳</i></div></div>
+        <div className="marquee" aria-label="MERN stack, full-stack development, artificial intelligence"><div className="marquee-track"><span>MERN STACK DEVELOPMENT</span><i>✳</i><span>AI &amp; RAG APPLICATIONS</span><i>✳</i><span>BUILD · LEARN · IMPROVE</span><i>✳</i><span>MERN STACK DEVELOPMENT</span><i>✳</i><span>AI &amp; RAG APPLICATIONS</span><i>✳</i><span>BUILD · LEARN · IMPROVE</span><i>✳</i></div></div>
 
         <section className="work-section section-shell" id="work">
-          <div className="section-heading reveal"><div><p className="eyebrow"><span className="section-number">01</span> SELECTED WORK</p><h2>Things I’ve<br /><span>made real.</span></h2></div><p className="section-intro">A few snapshots of ideas turned into useful, considered digital experiences. Project previews below are original placeholders—swap in your real work before publishing.</p><a className="round-link" href="https://github.com/" target="_blank" rel="noreferrer" aria-label="Visit GitHub"><Icon name="github" /><span>MORE ON GITHUB</span><Icon name="arrow" size={15} /></a></div>
+          <div className="section-heading reveal"><div><p className="eyebrow"><span className="section-number">01</span> SELECTED PROJECTS</p><h2>Built with<br /><span>curiosity.</span></h2></div><p className="section-intro">Full-stack applications and AI experiments built with React, Node.js, MongoDB, and modern language-model tools.</p><a className="round-link" href={profile.github} target="_blank" rel="noreferrer" aria-label="Visit Raushan's GitHub"><Icon name="github" /><span>MORE ON GITHUB</span><Icon name="arrow" size={15} /></a></div>
           <div className="project-grid">{projects.map((project) => <article className={`project-card ${project.tone} reveal`} key={project.number} onPointerMove={(event) => {
             if (event.pointerType === 'touch') return;
             const bounds = event.currentTarget.getBoundingClientRect();
@@ -147,36 +265,57 @@ function App() {
             event.currentTarget.style.setProperty('--tilt-x', '0deg');
             event.currentTarget.style.setProperty('--tilt-y', '0deg');
           }}>
-            <div className="project-image-wrap"><img src={project.image} alt={project.imageAlt} loading="lazy" /><span className="project-image-label">CONCEPT PREVIEW · REPLACE WITH REAL PROJECT</span><a className="project-open" href="https://github.com/" target="_blank" rel="noreferrer" aria-label={`View ${project.name} project`}><Icon name="external" /></a></div>
+            <div className="project-image-wrap"><img src={project.image} alt={project.imageAlt} loading="lazy" /><span className="project-image-label">ORIGINAL PROJECT ARTWORK</span><a className="project-open" href={project.repository} target="_blank" rel="noreferrer" aria-label={`View ${project.name} repository`}><Icon name="external" /></a></div>
             <div className="project-meta"><span>{project.number} / {project.category}</span><span className="project-arrow"><Icon name="arrow" /></span></div>
-            <h3>{project.name}<span className="placeholder-star">✳</span></h3><p className="project-description">{project.description}</p>
-            <div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+            <h3>{project.name}<span className="project-spark">✳</span></h3><p className="project-description">{project.description}</p>
+            <div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><a className="project-repository" href={project.repository} target="_blank" rel="noreferrer">View source <Icon name="arrow" size={14} /></a>
           </article>)}</div>
-          <div className="work-bottom reveal"><span>GOOD WORK STARTS WITH A GOOD QUESTION.</span><a href={`mailto:${email}`}>Have a project in mind? <Icon name="arrow" size={16} /></a></div>
+          <div className="work-bottom reveal"><span>BUILD · LEARN · IMPROVE · REPEAT</span><a href={`mailto:${profile.email}`}>Have a project in mind? <Icon name="arrow" size={16} /></a></div>
         </section>
 
         <section className="about-section section-shell" id="about">
-          <div className="about-top reveal"><div><p className="eyebrow"><span className="section-number">02</span> A LITTLE ABOUT ME</p><h2>Engineer by trade.<br /><span>Curious by default.</span></h2></div><div className="about-aside"><Icon name="spark" size={22} /><p>I care about what happens between the first idea and the last pixel. That’s where the good stuff lives.</p></div></div>
+          <div className="about-top reveal"><div><p className="eyebrow"><span className="section-number">02</span> ABOUT RAUSHAN</p><h2>Computer Science student.<br /><span>Developer by practice.</span></h2></div><div className="about-aside"><Icon name="spark" size={22} /><p>Build. Learn. Improve. Repeat.</p></div></div>
           <div className="about-grid">
-            <div className="about-story reveal"><p className="story-lead">I’m a full-stack developer who likes turning complex problems into experiences that feel simple.</p><p>This is your space to tell the story behind the code: what you’re curious about, the problems you enjoy solving, and the kind of teams you do your best work with. Replace this draft with a few sentences that sound like you.</p><a className="inline-link" href={`mailto:${email}`}>A little more about me <Icon name="arrow" size={16} /></a></div>
-            <div className="skills-panel reveal"><div className="panel-label"><span>THE TOOLKIT</span><span>SELECTED SKILLS</span></div><div className="skills-cloud">{skills.map((skill, index) => <span className={`skill-chip chip-${index % 4}`} key={skill}>{skill}</span>)}</div><p>Tools are just tools. The goal is always to choose the right one for the problem.</p></div>
-            <div className="quote-panel reveal"><span className="quote-mark">“</span><blockquote>Great software should feel inevitable: clear in purpose, thoughtful in detail, and a little bit delightful.</blockquote><div className="quote-author"><span className="quote-avatar">YN</span><span>YOUR NAME<small>DEVELOPER / BUILDER</small></span></div><span className="quote-decoration">✳</span></div>
+            <div className="about-story reveal"><div className="about-card-kicker"><span>01 / PROFILE</span><span className="card-status"><i /> OPEN TO WORK</span></div><p className="story-lead">I’m a Computer Science Engineering student at LNCT, Bhopal, interested in software development and practical problem-solving.</p><p>I enjoy building full-stack web applications with JavaScript, React.js, Node.js, Express.js, and MongoDB, while exploring AI applications with RAG and LLMs. I’m seeking entry-level Software Developer, Full-Stack Developer, or Java Developer opportunities.</p><a className="inline-link" href={`mailto:${profile.email}`}>Get in touch <Icon name="arrow" size={16} /></a><span className="about-card-index" aria-hidden="true">RK<span>.</span></span></div>
+            <div className="skills-panel reveal"><div className="panel-label"><span>TECHNICAL SKILLS</span><span>LOGO-LED TOOLKIT</span></div><div className="skill-groups">{skillGroups.map((group) => <div className="skill-group" key={group.label}><span>{group.label}</span><div className="skills-cloud">{group.skills.map((skill, index) => <span className={`skill-chip chip-${index % 4}`} key={skill.name}>{skill.icon ? <img className="skill-logo" src={skill.icon} alt="" loading="lazy" /> : <span className="skill-mark" aria-hidden="true">{skill.mark}</span>}<span>{skill.name}</span></span>)}</div></div>)}</div></div>
+            <div className="quote-panel reveal"><div className="about-card-kicker"><span>02 / PRINCIPLE</span><span className="quote-kicker-mark">✳</span></div><span className="quote-mark">“</span><blockquote>Build.<br /><em>Learn. Improve.</em><br />Repeat.</blockquote><div className="quote-author"><span className="quote-avatar">RK</span><span>RAUSHAN KUMAR<small>FULL-STACK DEVELOPER</small></span></div><span className="quote-decoration">✳</span></div>
           </div>
         </section>
 
-        <section className="process-section section-shell">
-          <div className="process-title reveal"><p className="eyebrow"><span className="section-number">03</span> HOW I WORK</p><h2>Good process.<br /><span>Better outcomes.</span></h2><p>Thoughtful work doesn’t happen by accident. Here’s the rhythm I bring to a project.</p></div>
-          <div className="process-list">{process.map(([number, title, text], index) => <article className="process-item reveal" key={number} style={{ transitionDelay: `${index * 100}ms` }}><span className="process-number">{number}</span><span className="process-icon"><Icon name={['spark', 'copy', 'github', 'arrow'][index] as IconName} size={18} /></span><div><h3>{title}</h3><p>{text}</p></div><span className="process-line" /></article>)}</div>
+        <section className="achievements-section section-shell" id="achievements">
+          <div className="section-heading reveal"><div><p className="eyebrow"><span className="section-number">03</span> CODING ACHIEVEMENTS</p><h2>Practice adds<br /><span>up.</span></h2></div><p className="section-intro">A snapshot of problem-solving practice across coding platforms and SQL.</p></div>
+          <div className="achievement-grid">{achievements.map((achievement, index) => <article className="achievement-card reveal" key={achievement.label} style={{ transitionDelay: `${index * 90}ms` }}><span className="achievement-index">0{index + 1}</span><strong>{achievement.value}</strong><span className="achievement-label">{achievement.label}</span><span className="achievement-spark" aria-hidden="true">✳</span></article>)}</div>
+        </section>
+
+        <section className="education-section section-shell" id="education">
+          <div className="education-heading reveal"><p className="eyebrow"><span className="section-number">04</span> EDUCATION</p><h2>Learning the<br /><span>foundations.</span></h2></div>
+          <article className="education-card reveal"><div className="education-mark">LNCT</div><div className="education-details"><span className="education-dates">2023 — 2027 · EXPECTED</span><h3>Bachelor of Technology</h3><p>Computer Science and Engineering</p><span className="education-institution">Lakshmi Narain College of Technology · Bhopal, Madhya Pradesh</span></div><div className="education-grade"><strong>8.33</strong><span>CGPA / 10</span></div></article>
         </section>
 
         <section className="contact-section section-shell" id="contact">
           <div className="contact-orbit" aria-hidden="true"><span /><span /><span /></div>
-          <div className="contact-content reveal"><p className="eyebrow"><span className="status-dot" /> 04 / YOUR NEXT CHAPTER</p><h2>Have a good<br />one in <span>mind?</span></h2><p className="contact-copy">I’m always up for a thoughtful conversation, a tricky problem, or a chance to build something useful together.</p><div className="contact-actions"><a className="button button-light magnetic" href={`mailto:${email}`} onPointerMove={moveMagneticButton} onPointerLeave={resetMagneticButton}><Icon name="mail" /> Say hello <Icon name="arrow" /></a><button className="email-copy" type="button" onClick={copyEmail} aria-live="polite"><span>{copied ? 'EMAIL COPIED' : email}</span><Icon name={copied ? 'spark' : 'copy'} size={16} /></button></div></div>
-          <div className="contact-side reveal"><span>OPEN TO</span><strong>Good people.<br />Hard problems.<br />Useful things.</strong><span className="contact-spark">✳</span><span className="contact-coord">REPLY TIME<br />USUALLY 1–2 DAYS</span></div>
+          <div className="contact-content reveal"><p className="eyebrow"><span className="status-dot" /> 05 / OPEN TO ENTRY-LEVEL ROLES</p><h2>Let’s build<br />what’s <span>next.</span></h2><p className="contact-copy">Have an opportunity, idea, or question? Send me a message directly from this page.</p><div className="contact-actions"><a className="button button-light magnetic" href={`mailto:${profile.email}`} onPointerMove={moveMagneticButton} onPointerLeave={resetMagneticButton}><Icon name="mail" /> Say hello <Icon name="arrow" /></a><button className="email-copy" type="button" onClick={copyEmail} aria-live="polite"><span>{copied ? 'EMAIL COPIED' : profile.email}</span><Icon name={copied ? 'spark' : 'copy'} size={16} /></button></div></div>
+          <form className="contact-form reveal" onSubmit={submitContactForm}>
+            <div className="contact-form-heading"><span>DIRECT MESSAGE</span><small>MAILTO / 01</small></div>
+            <div className="contact-form-row">
+              <label>Name<input type="text" name="name" value={contactForm.name} onChange={(event) => updateContactField('name', event.target.value)} placeholder="Your name" autoComplete="name" required /></label>
+              <label>Email<input type="email" name="email" value={contactForm.email} onChange={(event) => updateContactField('email', event.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>
+            </div>
+            <label>Subject<input type="text" name="subject" value={contactForm.subject} onChange={(event) => updateContactField('subject', event.target.value)} placeholder="How can I help?" required /></label>
+            <label>Message<textarea name="message" value={contactForm.message} onChange={(event) => updateContactField('message', event.target.value)} placeholder="Write your message..." rows={4} required /></label>
+            <button className="contact-submit" type="submit" disabled={contactStatus === 'sending'}>{contactStatus === 'sending' ? 'Sending message...' : 'Send message'} <Icon name="arrow" size={16} /></button>
+            <p className={`contact-form-note contact-form-status-${contactStatus}`} role="status" aria-live="polite">
+              {contactStatus === 'success' && 'Message sent successfully. Thanks for reaching out!'}
+              {contactStatus === 'fallback' && <>Opening Gmail with your message ready to send. If Gmail asks you to sign in, sign in and click Send.</>}
+              {contactStatus === 'error' && <>{contactError} Please try again or email <a href={`mailto:${profile.email}`}>{profile.email}</a>.</>}
+              {contactStatus === 'idle' || contactStatus === 'sending' ? `Your message will be sent securely to ${profile.email}.` : ''}
+            </p>
+          </form>
+          <div className="contact-side reveal"><span>BASED IN</span><strong>Bhopal,<br />Madhya Pradesh,<br />India.</strong><span className="contact-spark">✳</span><span className="contact-coord">OPEN TO<br />ENTRY-LEVEL OPPORTUNITIES</span></div>
         </section>
       </main>
 
-      <footer className="site-footer section-shell"><a className="brand footer-brand" href="#home"><span className="brand-mark">Y<span>.</span></span><span className="brand-name">YOUR NAME<small>FULL-STACK DEVELOPER</small></span></a><span className="footer-note">BUILT WITH CURIOSITY · © 2026</span><a className="back-top" href="#home">BACK TO TOP <span>↑</span></a></footer>
+      <footer className="site-footer section-shell"><a className="brand footer-brand" href="#home"><span className="brand-mark">RK</span><span className="brand-name">RAUSHAN KUMAR<small>FULL-STACK DEVELOPER</small></span></a><span className="footer-note">BUILD · LEARN · IMPROVE · REPEAT</span><a className="back-top" href="#home">BACK TO TOP <span>↑</span></a></footer>
       <div className="grain" aria-hidden="true" />
     </>
   );
