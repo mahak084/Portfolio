@@ -28,6 +28,19 @@ For Gmail:
 
 The recipient is configured as `raushankumarlnct007@gmail.com` in `server/contact-handler.ts`. Never commit `.env` or an SMTP password.
 
+## Deploy to Vercel
+
+The site is configured for Vercel with a serverless `/api/contact` function. Deploy with:
+
+```bash
+npx vercel
+npx vercel --prod
+```
+
+Live site: https://raushan-kumar-lnct-portfolio.vercel.app
+
+Add `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, and `SMTP_PASS` to the Vercel project environment variables for the contact form to send messages directly. The frontend remains deployable without those secrets, but the API will return a configuration error until they are added.
+
 ## Content and assets
 
 - Profile, project descriptions/links, skills, achievement numbers, education, and social links are in `src/App.tsx`.

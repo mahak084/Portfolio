@@ -95,7 +95,7 @@ const skillGroups: { label: string; skills: Skill[] }[] = [
 const achievements = [
   { value: '350+', label: 'LeetCode problems solved' },
   { value: '250+', label: 'GeeksforGeeks problems solved' },
-  { value: '2-Star', label: 'CodeChef rating' },
+  { value: '3-Star', label: 'CodeChef rating' },
   { value: '200+', label: 'LeetCode streak' },
   { value: 'Top 50', label: 'SQL problems completed' },
 ];
